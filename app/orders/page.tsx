@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Package, Eye, CheckCircle, Truck, XCircle, FileText } from 'lucide-react'
+import { generateInvoice } from '@/lib/invoice/generateInvoice'
 
 function OrdersContent() {
   const router = useRouter()
@@ -18,6 +19,7 @@ function OrdersContent() {
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
   const [mounted, setMounted] = useState(false)
+  const [downloadingId, setDownloadingId] = useState<string | null>(null)
 
   const successOrderId = searchParams.get('success')
   const orderId = searchParams.get('orderId')
@@ -91,13 +93,10 @@ function OrdersContent() {
 
   const downloadInvoice = async (orderId: string) => {
     try {
-      const response = await fetch(`/api/invoice/${orderId}`)
-      if (!response.ok) {
-        const error = await response.json()
-        alert(error.error || 'Failed to download invoice')
-        return
-      }
-      const blob = await response.blob()
+      setDownloadingId(orderId)
+      const { pdfBuffer } = await generateInvoice(orderId)
+      const uint8Array = new Uint8Array(pdfBuffer)
+      const blob = new Blob([uint8Array], { type: 'application/pdf' })
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -109,6 +108,8 @@ function OrdersContent() {
     } catch (error) {
       console.error('Error downloading invoice:', error)
       alert('Failed to download invoice')
+    } finally {
+      setDownloadingId(null)
     }
   }
 
@@ -181,9 +182,10 @@ function OrdersContent() {
                     variant="outline"
                     size="sm"
                     onClick={() => downloadInvoice(order.id)}
+                    disabled={downloadingId === order.id}
                   >
                     <FileText className="h-4 w-4 mr-1" />
-                    Download Invoice
+                    {downloadingId === order.id ? 'Generating...' : 'Download Invoice'}
                   </Button>
                 </div>
               </CardHeader>

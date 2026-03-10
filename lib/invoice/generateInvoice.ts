@@ -1,10 +1,12 @@
 import { renderToBuffer } from '@react-pdf/renderer'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 import { InvoiceTemplate } from './InvoiceTemplate'
 
-export async function generateInvoice(orderId: string) {
-  const supabase = await createClient()
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+export async function generateInvoice(orderId: string) {
   const { data: order, error: orderError } = await supabase
     .from('orders')
     .select(`

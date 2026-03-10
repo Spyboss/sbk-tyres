@@ -36,6 +36,7 @@ import {
   Minus,
   FileText
 } from 'lucide-react'
+import { generateInvoice } from '@/lib/invoice/generateInvoice'
 
 export default function AdminOrdersPage() {
   const router = useRouter()
@@ -48,6 +49,7 @@ export default function AdminOrdersPage() {
   const [showDetails, setShowDetails] = useState(false)
   const [shippingCost, setShippingCost] = useState('')
   const [userRole, setUserRole] = useState<string | null>(null)
+  const [downloadingId, setDownloadingId] = useState<string | null>(null)
 
   useEffect(() => {
     checkUser()
@@ -144,13 +146,10 @@ export default function AdminOrdersPage() {
 
   const downloadInvoice = async (orderId: string) => {
     try {
-      const response = await fetch(`/api/invoice/${orderId}`)
-      if (!response.ok) {
-        const error = await response.json()
-        alert(error.error || 'Failed to download invoice')
-        return
-      }
-      const blob = await response.blob()
+      setDownloadingId(orderId)
+      const { pdfBuffer } = await generateInvoice(orderId)
+      const uint8Array = new Uint8Array(pdfBuffer)
+      const blob = new Blob([uint8Array], { type: 'application/pdf' })
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -162,6 +161,8 @@ export default function AdminOrdersPage() {
     } catch (error) {
       console.error('Error downloading invoice:', error)
       alert('Failed to download invoice')
+    } finally {
+      setDownloadingId(null)
     }
   }
 
@@ -295,6 +296,7 @@ export default function AdminOrdersPage() {
                             variant="ghost" 
                             size="sm"
                             onClick={() => downloadInvoice(order.id)}
+                            disabled={downloadingId === order.id}
                           >
                             <FileText className="h-4 w-4" />
                           </Button>
