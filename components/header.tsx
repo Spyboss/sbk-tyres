@@ -14,22 +14,24 @@ export function Header() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userRole, setUserRole] = useState<string | undefined>(undefined)
+  const [userEmail, setUserEmail] = useState<string>('')
   const itemCount = useCartStore((state) => state.getItemCount())
   const { user, loading } = useAuth()
 
   useEffect(() => {
     if (user) {
-      // Fetch user role
       supabase
         .from('profiles')
-        .select('role')
+        .select('role, email, company_name')
         .eq('id', user.id)
         .single()
         .then(({ data }) => {
           setUserRole(data?.role)
+          setUserEmail(data?.company_name || data?.email || user.email || '')
         })
     } else {
       setUserRole(undefined)
+      setUserEmail('')
     }
   }, [user])
 
@@ -95,6 +97,14 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          {/* User Info */}
+          {isAuthenticated && userRole && (
+            <div className="hidden sm:flex items-center gap-2 px-2 py-1 bg-muted rounded-md text-xs">
+              <span className="font-medium text-primary capitalize">{userRole}</span>
+              <span className="text-muted-foreground truncate max-w-[120px]">{userEmail}</span>
+            </div>
+          )}
+
           {/* Cart Button */}
           <Link href="/cart">
             <Button variant="outline" size="icon" className="relative">
