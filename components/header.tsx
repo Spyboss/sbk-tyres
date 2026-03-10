@@ -46,7 +46,7 @@ export function Header() {
       <div className="container flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
           <img
-            src="/brand/sbk-logo.png"
+            src="https://res.cloudinary.com/dthx4fxte/image/upload/v1773158169/IMG-20260303-WA0008_cb0ork.jpg"
             alt="SBK Tyres"
             className="h-10 w-auto object-contain"
           />
