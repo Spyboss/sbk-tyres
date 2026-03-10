@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label'
 import { Package, Loader2 } from 'lucide-react'
 
+const LOGO_URL = "https://res.cloudinary.com/dthx4fxte/image/upload/v1773158169/IMG-20260303-WA0008_cb0ork.jpg"
+
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
@@ -56,7 +58,11 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <Package className="h-12 w-12 text-primary" />
+            <img 
+              src={LOGO_URL} 
+              alt="SBK Tyres" 
+              className="h-16 w-auto object-contain"
+            />
           </div>
           <CardTitle className="text-2xl">SBK Tyre Distributors</CardTitle>
           <CardDescription>
