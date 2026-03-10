@@ -1,10 +1,9 @@
-const withCloudflare = require('@cloudflare/next-on-pages')
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   images: {
     domains: [],
   },
 }
 
-module.exports = withCloudflare(nextConfig)
+module.exports = nextConfig

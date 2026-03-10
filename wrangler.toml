@@ -1,7 +1,7 @@
 name = "sbk-tyres"
 compatibility_date = "2024-01-01"
-pages_build_output_dir = ".output"
+pages_build_output_dir = ".next"
 
 [vars]
-NEXT_PUBLIC_SUPABASE_URL = ""
-NEXT_PUBLIC_SUPABASE_ANON_KEY = ""
+NEXT_PUBLIC_SUPABASE_URL = "https://wuisxibhflkxzltnpucc.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1aXN4aWJoZmxreHpsdG5wdWNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5OTI3MjMsImV4cCI6MjA4ODU2ODcyM30.AxsGuFjZGIXekbvj67a1n06Ky_6d_MnQyy_hf7H5pt4"
