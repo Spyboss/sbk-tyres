@@ -33,7 +33,8 @@ import {
   Search,
   Eye,
   Plus,
-  Minus
+  Minus,
+  FileText
 } from 'lucide-react'
 
 export default function AdminOrdersPage() {
@@ -139,6 +140,29 @@ export default function AdminOrdersPage() {
       setOrderItems(items)
     }
     setShowDetails(true)
+  }
+
+  const downloadInvoice = async (orderId: string) => {
+    try {
+      const response = await fetch(`/api/invoice/${orderId}`)
+      if (!response.ok) {
+        const error = await response.json()
+        alert(error.error || 'Failed to download invoice')
+        return
+      }
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `invoice-${orderId.slice(0, 8).toUpperCase()}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('Error downloading invoice:', error)
+      alert('Failed to download invoice')
+    }
   }
 
   const getStatusBadge = (status: string) => {
@@ -266,6 +290,13 @@ export default function AdminOrdersPage() {
                             onClick={() => viewOrderDetails(order)}
                           >
                             <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => downloadInvoice(order.id)}
+                          >
+                            <FileText className="h-4 w-4" />
                           </Button>
                           <Select
                             value={order.status}

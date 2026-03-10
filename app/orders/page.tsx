@@ -9,7 +9,7 @@ import { formatCurrency, formatDate } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Package, Eye, CheckCircle, Truck, XCircle } from 'lucide-react'
+import { Package, Eye, CheckCircle, Truck, XCircle, FileText } from 'lucide-react'
 
 function OrdersContent() {
   const router = useRouter()
@@ -89,6 +89,29 @@ function OrdersContent() {
     }
   }
 
+  const downloadInvoice = async (orderId: string) => {
+    try {
+      const response = await fetch(`/api/invoice/${orderId}`)
+      if (!response.ok) {
+        const error = await response.json()
+        alert(error.error || 'Failed to download invoice')
+        return
+      }
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `invoice-${orderId.slice(0, 8).toUpperCase()}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('Error downloading invoice:', error)
+      alert('Failed to download invoice')
+    }
+  }
+
   if (!mounted) {
     return null
   }
@@ -154,6 +177,14 @@ function OrdersContent() {
                     {getStatusIcon(order.status)}
                     {getStatusBadge(order.status)}
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => downloadInvoice(order.id)}
+                  >
+                    <FileText className="h-4 w-4 mr-1" />
+                    Download Invoice
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent>
