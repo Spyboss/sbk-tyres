@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Header } from '@/components/header'
 import { AuthProvider } from '@/components/auth-provider'
+import { ServiceWorkerRegistration } from '@/components/service-worker-registration'
 
 export const metadata: Metadata = {
   title: 'SBK Tyre Distributors',
@@ -33,6 +34,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="SBK Tyres" />
       </head>
       <body className="min-h-screen bg-background font-sans antialiased">
+        <ServiceWorkerRegistration />
         <AuthProvider>
           <Header />
           <main className="container py-4 md:py-8 px-4">

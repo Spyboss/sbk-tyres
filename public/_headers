@@ -10,3 +10,8 @@
 /icon-512.png
   Cache-Control: public, max-age=86400
   Access-Control-Allow-Origin: *
+
+/sw.js
+  Content-Type: application/javascript
+  Cache-Control: public, max-age=0
+  Access-Control-Allow-Origin: *
