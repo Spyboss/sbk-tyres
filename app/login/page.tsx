@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label'
 import { Package, Loader2 } from 'lucide-react'
 
-const LOGO_URL = "https://res.cloudinary.com/dthx4fxte/image/upload/v1773158169/IMG-20260303-WA0008_cb0ork.jpg"
+const LOGO_URL = "https://res.cloudinary.com/dthx4fxte/image/upload/v1773209605/SBK_Tyre_Transparent_vxmylg.png"
 
 export default function LoginPage() {
   const router = useRouter()
