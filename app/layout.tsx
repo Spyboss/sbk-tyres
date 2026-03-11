@@ -29,9 +29,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="apple-touch-icon" href="/icon-192.png" />
+        <link rel="apple-touch-icon" href="/icon-512.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="SBK Tyres" />
+        <meta name="theme-color" content="#0f172a" />
       </head>
       <body className="min-h-screen bg-background font-sans antialiased">
         <ServiceWorkerRegistration />
