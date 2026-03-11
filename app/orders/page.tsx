@@ -94,9 +94,8 @@ function OrdersContent() {
   const downloadInvoice = async (orderId: string) => {
     try {
       setDownloadingId(orderId)
-      const { pdfBuffer } = await generateInvoice(orderId)
-      const uint8Array = new Uint8Array(pdfBuffer)
-      const blob = new Blob([uint8Array], { type: 'application/pdf' })
+      const pdfBuffer = await generateInvoice(orderId)
+      const blob = new Blob([pdfBuffer as unknown as BlobPart], { type: 'application/pdf' })
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
