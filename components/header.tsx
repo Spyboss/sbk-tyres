@@ -50,7 +50,7 @@ export function Header() {
           <img
             src="https://res.cloudinary.com/dthx4fxte/image/upload/v1773209605/SBK_Tyre_Transparent_vxmylg.png"
             alt="SBK Tyres"
-            className="h-10 w-auto object-contain"
+            className="h-8 w-auto object-contain"
           />
         </Link>
 
