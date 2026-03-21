@@ -60,3 +60,8 @@ coverage/
 *.pdf
 *.zip
 *.txt
+
+# Keep required web app assets in repo
+!public/apple-touch-icon.png
+!public/icon-192.png
+!public/icon-512.png

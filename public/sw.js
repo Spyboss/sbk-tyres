@@ -1,12 +1,12 @@
-const CACHE_NAME = 'sbk-tyres-v1';
+const CACHE_NAME = 'sbk-tyres-v2';
 
 const STATIC_ASSETS = [
   '/',
   '/catalog',
   '/manifest.json',
+  '/apple-touch-icon.png',
   '/icon-192.png',
   '/icon-512.png',
-  '/offline.html',
 ];
 
 self.addEventListener('install', (event) => {
@@ -30,6 +30,10 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).catch(() => {

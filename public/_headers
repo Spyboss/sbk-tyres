@@ -11,6 +11,10 @@
   Cache-Control: public, max-age=86400
   Access-Control-Allow-Origin: *
 
+/apple-touch-icon.png
+  Cache-Control: public, max-age=86400
+  Access-Control-Allow-Origin: *
+
 /sw.js
   Content-Type: application/javascript
   Cache-Control: public, max-age=0
