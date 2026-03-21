@@ -12,6 +12,9 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Search, ShoppingCart, Package } from 'lucide-react'
 
+const normalizeSizeSearch = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '')
+const numbersOnly = (value: string) => value.replace(/\D/g, '')
+
 export default function CatalogPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -75,9 +78,14 @@ export default function CatalogPage() {
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase()
+      const normalizedQuery = normalizeSizeSearch(searchQuery)
+      const numericQuery = numbersOnly(searchQuery)
+
       result = result.filter(p => 
         p.size.toLowerCase().includes(query) ||
-        p.brand.toLowerCase().includes(query)
+        p.brand.toLowerCase().includes(query) ||
+        normalizeSizeSearch(p.size).includes(normalizedQuery) ||
+        (numericQuery.length > 0 && numbersOnly(p.size).includes(numericQuery))
       )
     }
 
@@ -128,7 +136,7 @@ export default function CatalogPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by size (e.g. 215/60R16)"
+                placeholder="Search by size (e.g. 215/60R16 or 2156016)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"

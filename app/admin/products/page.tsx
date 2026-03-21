@@ -18,13 +18,16 @@ import {
   DialogTrigger,
   DialogFooter
 } from '@/components/ui/dialog'
-import { 
-  Package, 
+import {
+  Package,
   Search,
   Plus,
   Pencil,
   Save
 } from 'lucide-react'
+
+const normalizeSizeSearch = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '')
+const numbersOnly = (value: string) => value.replace(/\D/g, '')
 
 export default function AdminProductsPage() {
   const router = useRouter()
@@ -139,10 +142,16 @@ export default function AdminProductsPage() {
 
   const filteredProducts = products.filter(product => {
     if (!searchQuery) return true
+
     const query = searchQuery.toLowerCase()
+    const normalizedQuery = normalizeSizeSearch(searchQuery)
+    const numericQuery = numbersOnly(searchQuery)
+
     return (
       product.brand.toLowerCase().includes(query) ||
-      product.size.toLowerCase().includes(query)
+      product.size.toLowerCase().includes(query) ||
+      normalizeSizeSearch(product.size).includes(normalizedQuery) ||
+      (numericQuery.length > 0 && numbersOnly(product.size).includes(numericQuery))
     )
   })
 
