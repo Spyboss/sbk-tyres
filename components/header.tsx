@@ -10,6 +10,26 @@ import { useAuth } from '@/components/auth-provider'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
+const clearApplicationCaches = async () => {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  if ('serviceWorker' in navigator) {
+    const registration = await navigator.serviceWorker.getRegistration('/').catch(() => null)
+    registration?.active?.postMessage({ type: 'CLEAR_APP_CACHE' })
+  }
+
+  if ('caches' in window) {
+    const keys = await caches.keys()
+    await Promise.all(
+      keys
+        .filter((key) => key.startsWith('sbk-tyres-'))
+        .map((key) => caches.delete(key))
+    )
+  }
+}
+
 export function Header() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -37,6 +57,7 @@ export function Header() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
+    await clearApplicationCaches()
     window.location.href = '/catalog'
   }
 
