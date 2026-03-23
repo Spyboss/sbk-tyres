@@ -86,17 +86,30 @@ CREATE TABLE public.cart_items (
 
 ## Security (RLS)
 
+### Migration Source of Truth
+- RLS policies are versioned in `supabase/migrations/`
+- Latest hardening migration: `20260323172636_harden_rls_policies_for_dealer_portal.sql`
+
 ### Pricing Protection
-- Guests: Can view products but price returns NULL
-- Authenticated dealers: Can view full pricing via `get_products_with_price()` function
+- Database returns active product rows for both guest and authenticated sessions
+- Price visibility in the UI is controlled by authentication checks on the frontend
+- RLS still prevents guests from reading `profiles`, `orders`, and `order_items`
 
 ### Role-Based Access
-| Role  | View Products | View Prices | Create Orders | Manage Stock | Manage Users |
-|-------|---------------|-------------|---------------|--------------|--------------|
-| Guest | ✓             | ✗           | ✗             | ✗            | ✗            |
-| Dealer| ✓             | ✓           | ✓             | ✗            | ✗            |
-| Staff | ✓             | ✓           | ✓             | ✓            | ✗            |
-| Admin | ✓             | ✓           | ✓             | ✓            | ✓            |
+| Role  | Profiles | Products | Orders | Order Items | Manage Roles |
+|-------|----------|----------|--------|-------------|--------------|
+| Guest | ✗        | Active only | ✗   | ✗           | ✗            |
+| Dealer| Own + self profile | Active + products on own orders | Own only | Own only | ✗ |
+| Staff | All      | Full CRUD | View/update all | View/update all | ✗ |
+| Admin | All      | Full CRUD | Full CRUD | Full CRUD | ✓ |
+
+### Negative Access Tests (Executed)
+- Dealer cannot read other users' profiles
+- Dealer cannot read other dealers' orders or order items
+- Dealer cannot self-promote role to admin
+- Dealer cannot insert orders for another dealer
+- Dealer cannot insert order items into another dealer's order
+- Guest cannot read profiles/orders/order_items or create orders
 
 ## API Keys (Environment Variables)
 ```env

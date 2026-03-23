@@ -87,8 +87,16 @@ Visit http://localhost:3000
 - **orders**: Dealer orders
 - **order_items**: Order line items
 
+## Supabase Migrations
+
+- SQL migrations are stored in `supabase/migrations/`
+- Latest security migration: `supabase/migrations/20260323172636_harden_rls_policies_for_dealer_portal.sql`
+- This migration hardens RLS across `profiles`, `products`, `orders`, and `order_items`
+
 ## Security
 
-- RLS policies enforce role-based access
-- Price visibility controlled at frontend level
-- Stock deduction via database trigger
+- RLS policies enforce role-based access at the database boundary
+- Dealers can read only their own profiles/orders/order_items
+- Staff/admin can manage products and view all operational data
+- Only admins can manage user roles
+- Stock deduction runs in a `SECURITY DEFINER` trigger to preserve checkout writes under strict RLS
