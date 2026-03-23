@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { Profile } from '@/types'
+import { Profile, UserRole } from '@/types'
 import { formatDate } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -25,8 +25,8 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select'
-import { 
-  Users, 
+import {
+  Users,
   Search,
   Plus,
   Mail,
@@ -34,13 +34,16 @@ import {
   Phone
 } from 'lucide-react'
 
+type UserListItem = Pick<Profile, 'id' | 'email' | 'company_name' | 'phone' | 'role' | 'created_at'>
+const ADMIN_ACCESS_ROLES: UserRole[] = ['admin', 'staff']
+
 export default function AdminUsersPage() {
   const router = useRouter()
-  const [users, setUsers] = useState<Profile[]>([])
+  const [users, setUsers] = useState<UserListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [showAddDialog, setShowAddDialog] = useState(false)
-  const [userRole, setUserRole] = useState<string | null>(null)
+  const [userRole, setUserRole] = useState<UserRole | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
 
   // Form state
@@ -56,7 +59,7 @@ export default function AdminUsersPage() {
   }, [])
 
   useEffect(() => {
-    if (userRole) {
+    if (userRole && ADMIN_ACCESS_ROLES.includes(userRole)) {
       fetchUsers()
     }
   }, [userRole])
@@ -68,29 +71,36 @@ export default function AdminUsersPage() {
       return
     }
 
-    const { data: profile } = await supabase
+    const { data: profile, error } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', session.user.id)
       .single()
 
-    if (!profile) {
+    if (error || !profile || !ADMIN_ACCESS_ROLES.includes(profile.role as UserRole)) {
+      setLoading(false)
       router.push('/catalog')
       return
     }
 
-    setUserRole(profile.role)
-    setIsAdmin(profile.role === 'admin')
+    const role = profile.role as UserRole
+    setUserRole(role)
+    setIsAdmin(role === 'admin')
   }
 
   const fetchUsers = async () => {
+    if (!userRole || !ADMIN_ACCESS_ROLES.includes(userRole)) {
+      setLoading(false)
+      return
+    }
+
     const { data, error } = await supabase
       .from('profiles')
-      .select('*')
+      .select('id, email, company_name, phone, role, created_at')
       .order('created_at', { ascending: false })
 
     if (!error && data) {
-      setUsers(data)
+      setUsers(data as UserListItem[])
     }
     setLoading(false)
   }
@@ -108,6 +118,10 @@ export default function AdminUsersPage() {
   }
 
   const updateUserRole = async (userId: string, role: string) => {
+    if (!isAdmin) {
+      return
+    }
+
     const { error } = await supabase
       .from('profiles')
       .update({ role })
@@ -146,6 +160,10 @@ export default function AdminUsersPage() {
         <Users className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
+  }
+
+  if (!userRole) {
+    return null
   }
 
   return (
