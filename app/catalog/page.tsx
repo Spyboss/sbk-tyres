@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Search, ShoppingCart, Package } from 'lucide-react'
+import { Search, ShoppingCart, Package, CheckCircle2 } from 'lucide-react'
 
 const normalizeSizeSearch = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '')
 const numbersOnly = (value: string) => value.replace(/\D/g, '')
@@ -23,6 +23,8 @@ export default function CatalogPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [userProfile, setUserProfile] = useState<Profile | null>(null)
   const [mounted, setMounted] = useState(false)
+  const [cartNotice, setCartNotice] = useState<string | null>(null)
+  const [recentlyAddedProductId, setRecentlyAddedProductId] = useState<string | null>(null)
   
   const { addItem } = useCartStore()
 
@@ -94,7 +96,33 @@ export default function CatalogPage() {
 
   const handleAddToCart = useCallback((product: Product) => {
     addItem(product, 1)
+    setRecentlyAddedProductId(product.id)
+    setCartNotice(`${product.brand} ${product.size}`)
   }, [addItem])
+
+  useEffect(() => {
+    if (!cartNotice) {
+      return
+    }
+
+    const timeout = setTimeout(() => {
+      setCartNotice(null)
+    }, 2800)
+
+    return () => clearTimeout(timeout)
+  }, [cartNotice])
+
+  useEffect(() => {
+    if (!recentlyAddedProductId) {
+      return
+    }
+
+    const timeout = setTimeout(() => {
+      setRecentlyAddedProductId(null)
+    }, 1200)
+
+    return () => clearTimeout(timeout)
+  }, [recentlyAddedProductId])
 
   const getStockBadge = (stock: number) => {
     if (stock === 0) {
@@ -201,18 +229,33 @@ export default function CatalogPage() {
               </CardContent>
               <CardFooter>
                 <Button 
-                  className="w-full" 
+                  className={`w-full transition-colors ${recentlyAddedProductId === product.id ? 'bg-green-600 hover:bg-green-600 text-white' : ''}`}
                   onClick={() => handleAddToCart(product)}
                   disabled={product.stock_level === 0}
                 >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Add to Cart
+                  {recentlyAddedProductId === product.id ? (
+                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                  ) : (
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                  )}
+                  {recentlyAddedProductId === product.id ? 'Added' : 'Add to Cart'}
                 </Button>
               </CardFooter>
             </Card>
           ))}
         </div>
       )}
+
+      {cartNotice ? (
+        <div className="fixed left-4 right-4 bottom-4 z-50 md:left-auto md:right-6 md:max-w-sm" aria-live="polite">
+          <div className="flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-900 shadow-lg animate-in slide-in-from-bottom-3 fade-in duration-300">
+            <CheckCircle2 className="h-5 w-5 shrink-0" />
+            <p className="text-sm font-medium">
+              {cartNotice} added to cart
+            </p>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }
