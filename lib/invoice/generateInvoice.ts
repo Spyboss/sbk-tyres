@@ -1,9 +1,5 @@
 import { jsPDF } from 'jspdf'
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
+import { supabase } from '@/lib/supabase'
 
 export async function generateInvoice(orderId: string): Promise<Uint8Array> {
   const { data: order, error: orderError } = await supabase
